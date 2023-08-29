@@ -78,8 +78,8 @@ const deleteProduct = async (id) => {
 const updateQuantity = async (id, action) => {
   try {
     let product = await getProductByID(id);
-    if (action == "+") product.quantity += 1;
-    if (action == "-" && product.quantity > 1) product.quantity -= 1;
+    if (action == "+") product.quantity++;
+    if (action == "-" && product.quantity > 0) product.quantity--;
     let getAll = await getAllProducts();
     let index = getAll.findIndex((item) => {
       return item.id === product.id;
