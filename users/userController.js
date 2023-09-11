@@ -7,7 +7,7 @@ const addNewUser = async (req, res) => {
     let action = await addUser(body);
     res.send(action);
   } catch (error) {
-    handleError(error, res);
+    handleError(res, error);
   }
 };
 
@@ -17,7 +17,7 @@ const loginRes = async (req, res) => {
     let logInAction = await logIn(data);
     res.send(logInAction);
   } catch (error) {
-    handleError(error, res);
+    handleError(res, error);
   }
 };
 

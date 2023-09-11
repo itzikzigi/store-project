@@ -56,9 +56,8 @@ const updateQuantity = async (req, res) => {
   try {
     let id = req.params.id;
     let action = req.params.action;
-    console.log(id, action);
     let change = await service.updateQuantity(id, action);
-    res.send("quantity updated. the new quantity is " + change);
+    res.send("quantity updated. the new quantity is " + change[0].quantity);
   } catch (error) {
     handleError(res, error);
   }

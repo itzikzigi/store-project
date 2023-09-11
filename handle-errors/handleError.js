@@ -1,8 +1,8 @@
 const chalk = require("chalk");
 
-const handleError = (err, res, stat = 400) => {
+const handleError = (res, err, status = 400) => {
   console.error(chalk.redBright(err.message));
-  return res.status(stat).send(err.message);
+  return res.status(status).send(err.message);
 };
 const serverErrorsHandler = (error, req, res, next) => {
   console.error(chalk.redBright(error.message));

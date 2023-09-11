@@ -1,4 +1,4 @@
-const { readAllUsers, writeToUSer } = require("./dal.js");
+const { readAllUsers, writeToUSer, getUserByEmail } = require("./dal.js");
 const joi = require("joi");
 const bcrypt = require("bcrypt");
 const schema = joi.object({
@@ -10,16 +10,12 @@ const schema = joi.object({
 const addUser = async (data) => {
   try {
     schema.validate(data);
-    let allUsers = await readAllUsers();
-    let check = allUsers.find((user) => {
-      return user.email === data.email;
-    });
-    if (check !== undefined) throw new Error("email already exist");
+    let check = await getUserByEmail(data.email);
+    if (check !== null) throw new Error("email already exist");
     let crypt = await bcrypt.hash(data.password, 10);
     data.password = crypt;
-    allUsers.push(data);
-    await writeToUSer(allUsers);
-    return Promise.resolve(allUsers[allUsers.length - 1]);
+    await writeToUSer(data);
+    return Promise.resolve(data);
   } catch (err) {
     return Promise.reject(err);
   }
@@ -29,7 +25,9 @@ const logIn = async (data) => {
   try {
     let users = await readAllUsers();
     let user = users.find(
-      (obj) => obj.email === data.email && obj.password === data.password
+      (obj) =>
+        obj.email === data.email &&
+        bcrypt.compareSync(data.password, obj.password)
     );
     if (user === undefined) throw new Error("incorrect email or password");
     return Promise.resolve(user);

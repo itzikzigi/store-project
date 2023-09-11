@@ -1,27 +1,33 @@
-const js = require("jsonfile");
-const fs = require("fs");
+const { MongoClient } = require("mongodb");
+const client = new MongoClient("mongodb://127.0.0.1:27017");
 const bcrypt = require("bcrypt");
-const usersFile = "./db/users.json";
 
-const createUsers = (file) => {
+const createUser = async (db) => {
   let user = [
     {
       name: "itzik",
       id: "1",
-      email: "itzik@gamil.com",
+      email: "itzik@gmail.com",
       password: "Aa123456",
       isAdmin: true,
     },
   ];
   let pass = user[0].password;
   user[0].password = bcrypt.hashSync(pass, 10);
-  js.writeFileSync(file, user);
+  await db.insertMany(user);
+  return user;
 };
-const checkDB = () => {
-  let file = fs.readFileSync(usersFile, "utf-8");
-  if (file.length === 0) {
-    createUsers(usersFile);
-    return console.log("Users DB created successfully");
+const checkDB = async () => {
+  try {
+    await client.connect();
+    const db = client.db("server_project").collection("users");
+    if ((await db.find({}).toArray()).length === 0) {
+      await createUser(db);
+      console.log("Users DB created successfully");
+    }
+    return await db.find().toArray();
+  } catch (error) {
+    return error;
   }
 };
 module.exports = checkDB;
